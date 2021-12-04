@@ -28,10 +28,10 @@ public class MapGenerator : MonoBehaviour
     private List<Vector2> floorCoordinates;
     private Vector2 exitPosition;
 
-    public int width = 15;
-    public int height = 15;
+    public int width = 12;
+    public int height = 12;
 
-    public Vector2 middleMap;
+    private Vector2 middleMap;
 
 
     // Start is called before the first frame update
@@ -46,6 +46,12 @@ public class MapGenerator : MonoBehaviour
 
     public void ReInitialize()
     {
+        width += 2;
+        height += 2;
+        map = new MapTile[width, height];
+        middleMap = new Vector2(Mathf.RoundToInt(width / 2.0f), Mathf.RoundToInt(height / 2.0f));
+        exitPosition = middleMap;
+
         // Destroy tiles
         foreach (Transform child in tileContainer.transform)
         {
@@ -53,7 +59,6 @@ public class MapGenerator : MonoBehaviour
         }
 
         floorCoordinates.Clear();
-        exitPosition = middleMap;
         GenerateMap();
     }
 
@@ -87,12 +92,17 @@ public class MapGenerator : MonoBehaviour
         return exitPosition;
     }
 
+    public Vector2 GetMiddleMap()
+    {
+        return middleMap;
+    }
+
     private void CreateFloor()
     {
         // Generate First Walker
         walkers = new List<RandomWalker>();
         var firstWalker = new RandomWalker();
-        firstWalker.position = new Vector2(Mathf.RoundToInt(width / 2.0f), Mathf.RoundToInt(height / 2.0f));
+        firstWalker.position = middleMap;
         firstWalker.direction = RandomDirection();
         walkers.Add(firstWalker);
 

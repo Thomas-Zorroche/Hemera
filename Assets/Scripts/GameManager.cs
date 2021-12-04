@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
 
     private void StartLevel()
     {
-        Vector3 middleMap = new Vector3(Mathf.RoundToInt(mapGenerator.width / 2.0f), Mathf.RoundToInt(mapGenerator.height / 2.0f), -2);
+        Vector3 middleMap = new Vector3(mapGenerator.GetMiddleMap().x, mapGenerator.GetMiddleMap().y, -2);
         player.transform.position = middleMap;
 
         // Random HSV color
