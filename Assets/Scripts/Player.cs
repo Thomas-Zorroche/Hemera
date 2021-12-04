@@ -15,6 +15,8 @@ public class Player : MonoBehaviour
     private float damageAmount = 0.001f;
     private float totalDamageReceive = 0.0f;
 
+    private bool canMove = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +28,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!canMove)
+            return;
+
         float xInput = Input.GetAxis("Horizontal");
         float yInput = Input.GetAxis("Vertical");
 
@@ -44,9 +49,17 @@ public class Player : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("LOST");
+                // GAME OVER
+                canMove = false;
+                GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+                gm.GameOver();
             }
         }
+    }
+
+    public void NextLevel()
+    {
+        totalDamageReceive = 0.0f;
     }
 
     public void TakeDamage(bool damage)

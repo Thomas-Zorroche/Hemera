@@ -20,14 +20,18 @@ public class MapGenerator : MonoBehaviour
     public float chanceWalkerDestroy = 0.05f;
     public float chanceWalkerNewDir= 0.5f;
 
+    public GameObject tileContainer;
     public GameObject wallPrefab;
     public GameObject bottomWallPrefab;
     public GameObject floorPrefab;
 
-    List<Vector2> floorCoordinates;
+    private List<Vector2> floorCoordinates;
+    private Vector2 exitPosition;
 
     public int width = 15;
     public int height = 15;
+
+    public Vector2 middleMap;
 
 
     // Start is called before the first frame update
@@ -35,6 +39,21 @@ public class MapGenerator : MonoBehaviour
     {
         map = new MapTile[width, height];
         floorCoordinates = new List<Vector2>();
+        middleMap = new Vector2(Mathf.RoundToInt(width / 2.0f), Mathf.RoundToInt(height / 2.0f));
+        exitPosition = middleMap;
+        GenerateMap();
+    }
+
+    public void ReInitialize()
+    {
+        // Destroy tiles
+        foreach (Transform child in tileContainer.transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
+        floorCoordinates.Clear();
+        exitPosition = middleMap;
         GenerateMap();
     }
 
@@ -61,6 +80,11 @@ public class MapGenerator : MonoBehaviour
     public Vector2 GetRandomFloorPosition()
     {
         return floorCoordinates[Random.Range(0, floorCoordinates.Count - 1)];
+    }
+
+    public Vector2 GetExitPosition()
+    {
+        return exitPosition;
     }
 
     private void CreateFloor()
@@ -186,6 +210,7 @@ public class MapGenerator : MonoBehaviour
 
     private void InstanciateTiles()
     {
+        GameObject tile;
         for (int x = 0; x < map.GetUpperBound(0); x++)
         {
             for (int y = 0; y < map.GetUpperBound(1); y++)
@@ -193,20 +218,31 @@ public class MapGenerator : MonoBehaviour
                 switch (map[x,y])
                 {
                     case MapTile.Empty:
-                        Instantiate(wallPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
+                        tile = Instantiate(wallPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
+                        tile.transform.parent = tileContainer.transform;
                         break;
+                    
                     case MapTile.Floor:
-                        Instantiate(floorPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
-                        floorCoordinates.Add(new Vector2(x, y));
+                        tile = Instantiate(floorPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
+                        var coord = new Vector2(x, y);
+                        floorCoordinates.Add(coord);
+                        tile.transform.parent = tileContainer.transform;
+                        if (Vector2.Distance(coord, middleMap) > Vector2.Distance(exitPosition, middleMap))
+                        {
+                            exitPosition = coord;
+                        }
                         break;
+                    
                     case MapTile.Wall:
-                        Instantiate(wallPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
+                        tile = Instantiate(wallPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
+                        tile.transform.parent = tileContainer.transform;
+                    
                         break;
                     case MapTile.BottomWall:
-                        Instantiate(bottomWallPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
+                        tile = Instantiate(bottomWallPrefab, new Vector3Int(x, y, 0), Quaternion.identity);
+                        tile.transform.parent = tileContainer.transform;
                         break;
                 }
-
             }
         }
     }
