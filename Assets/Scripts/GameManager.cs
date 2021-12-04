@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
         level++;
         levelUI.GetComponent<UnityEngine.UI.Text>().text = level.ToString();
 
+        player.NextLevel();
+
         // Destroy current level
         Destroy(exitGameObject);
         foreach (Transform child in enemiesContainer.transform)
